@@ -1,0 +1,32 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: delivery-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - delivery-network
+
+  app:
+    build: .
+    container_name: delivery-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/delivery
+      - SESSION_SECRET=your-super-secret-key
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - delivery-network
+
+networks:
+  delivery-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
